@@ -1,8 +1,12 @@
 import {Router} from 'express';
 const authrouter = Router();
-import {registeruser} from '../controllers/UserControllers.js'
+import authmiddleware from '../middlewares/auth.middleware.js';
+import {registeruser,loginUser,logoutuser,getMe} from '../controllers/UserControllers.js'
 
 authrouter.post('/register',registeruser);
+authrouter.post('/login',loginUser);
+authrouter.get('/logout',logoutuser);
+authrouter.get('/get-me',authmiddleware,getMe);
 
 
 export default authrouter;

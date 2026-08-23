@@ -4,7 +4,8 @@ export const userSchema=new mongoose.Schema({
     username:{
         type:String,
         required:true,
-        unique:true
+        unieque:true
+        
     },
     email:{
         type:String,
