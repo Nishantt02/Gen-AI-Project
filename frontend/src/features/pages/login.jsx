@@ -1,9 +1,21 @@
+import { useState } from "react";
 import "../form.style.scss";
+import { useAuth } from "../hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
+    const navigate = useNavigate();
+    const{loading,handlelogin}=useAuth();
+    const[email,setEmail]=useState("");
+    const[password,setPassword]=useState("");
     const handleSubmit = (e) => {
         e.preventDefault();
+        handlelogin({email,password});
+        navigate("/");
     };
+    if(loading){
+        return <div>Loading...</div>
+    }
 
     return (
         <main>
@@ -12,7 +24,7 @@ function Login() {
 
                 <form onSubmit={handleSubmit}>
                     <div className="input-group">
-                        <input
+                        <input onChange={(e)=>setEmail(e.target.value)}
                             type="email"
                             id="email"
                             name="email"
@@ -23,7 +35,7 @@ function Login() {
                     </div>
 
                     <div className="input-group">
-                        <input
+                        <input onChange={(e)=>setPassword(e.target.value)}
                             type="password"
                             id="password"
                             name="password"
