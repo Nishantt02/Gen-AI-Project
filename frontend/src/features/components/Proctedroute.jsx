@@ -11,10 +11,11 @@ const Protected=({children})=>{
     // if user is not logged in then navigate to login page
     if(!user){
        return <Navigate to={"/login"} />;
-        // return null;
     }
     // if user is logged in then show the children actual components
     return children;
 }
 
 export default Protected;
+
+

@@ -128,7 +128,6 @@ export const logoutuser=async(req,res)=>{
 // get the details of the user from the database and send it to the client
 export const getMe=async(req,res)=>{
 
-
 const user=await User.findById(req.user.id)
 if(!user){
   return res.status(400).json({message:"user not found"});

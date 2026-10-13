@@ -46,15 +46,23 @@ export async function logoutUser() {
   }
 }
 
+
 export async function getme() {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/auth/get-me`, {
-      withCredentials: true,
-    });
-    return response.data;
-    console.log("get me data", response.data);
-  } catch (error) {
-    console.error("Error getting me data:", error);
-    throw error;
+    try {
+        const response = await axios.get(
+            `${import.meta.env.VITE_BASE_URL}/api/auth/get-me`,
+            {
+                withCredentials: true,
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error(
+            "Error getting user:",
+            error.response?.data || error.message
+        );
+
+        throw error;
+    }
   }
-}

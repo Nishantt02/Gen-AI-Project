@@ -8,10 +8,12 @@ function Login() {
     const{loading,handlelogin}=useAuth();
     const[email,setEmail]=useState("");
     const[password,setPassword]=useState("");
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        handlelogin({email,password});
-        navigate("/");
+        const data = await handlelogin({email,password});
+        if (data?.user) {
+            navigate("/");
+        }
     };
     if(loading){
         return <div>Loading...</div>

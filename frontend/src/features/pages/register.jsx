@@ -10,10 +10,12 @@ function Register() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handlesubmit = (e) => {
+  const handlesubmit = async (e) => {
     e.preventDefault();
-    handleregister({ username, email, password });
-    navigate("/");
+    const data = await handleregister({ username, email, password });
+    if (data?.user) {
+      navigate("/");
+    }
   };
 
   if (loading) {
