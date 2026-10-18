@@ -1,7 +1,6 @@
 import { generateInterviewreport } from "../service/ai.service.js";
-import { upload } from "../middlewares/file.middleware.js";
-import Pdfparser from "pdf-parse";
-import interviewModel from "../models/InterviewModel.js";
+import { PDFParse } from "pdf-parse";
+import interview from '../models/InterviewModel.js'
 
 export const createInterviewReport = async (req, res) => {
   try {
@@ -41,11 +40,21 @@ export const createInterviewReport = async (req, res) => {
 export const generateInterviewReportController = async (req, res) => {
   // check if the required files are present in the request or not
   const resumefile = req.file;
+
+    if (!resumefile) {
+       return res.status(400).json({
+       message: "Resume file is required",
+      });
+    }
   // parse the pdf file and get the text content of the resume.
-  const resumeContent = await Pdfparser(resumefile.buffer);
+  // const resumeContent = new PDFParse(resumefile.buffer);
+  const resumeContent=await (new PDFParse(Uint8Array.from(req.file.buffer))).getText();
+  if(!resumeContent.text || !resumeContent.text.trim()){
+    return res.status(400).json({message:"resume file is empty or Invalid"});
+  }
 
   const { jobDescription, selfdescription } = req.body;
-  if (!resumefile || !jobDescription || !selfdescription) {
+  if (!jobDescription || !selfdescription) {
     {
       return res
         .status(400)
@@ -59,16 +68,15 @@ export const generateInterviewReportController = async (req, res) => {
     resume: resumeContent.text,
     jobDescription,
     selfdescription,
-
   });
-  res.status(200).json({ report: interviewreportbyai });
-  
-const interviewreport=await interviewModel.create({
-  user:req.user.id,
+
+const interviewreport=await interview.create({
+  users:req.user.id,
   jobDescription,
   resume:resumeContent.text,
   selfdescription,
   ...interviewreportbyai
 })
-res.status(200).json({report:interviewreport});
-};
+res.status(200).json({message:"interview report generated successfully",report:interviewreport});
+
+}

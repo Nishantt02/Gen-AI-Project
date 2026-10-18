@@ -90,5 +90,8 @@ export const interviewSchema = new mongoose.Schema({
     }   
 
 }, {
-    _id: false
+    
 });
+
+const Interview=mongoose.model("Interview", interviewSchema);
+export default Interview;
