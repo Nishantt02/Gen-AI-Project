@@ -72,7 +72,7 @@ const selfdescription=`
 I am a motivated and hardworking individual with a strong interest in learning new skills and developing my professional abilities. I have a background in Computer Science and Engineering and knowledge of programming, web development, and problem-solving. I am a quick learner, adaptable, and comfortable working both independently and as part of a team. I have good communication skills and a positive attitude toward challenges. My goal is to gain practical experience, contribute to the organization's success, and continue growing both personally and professionally.
 
 `
-const jobdescription=`
+const jobDescription=`
 We are seeking a highly skilled and motivated Full Stack Developer to join our dynamic team. The ideal candidate will have a strong background in web development, with expertise in both frontend and backend technologies. As a Full Stack Developer, you will be responsible for designing, developing, and maintaining web applications that provide an exceptional user experience.
 `
-export {resume,selfdescription,jobdescription};
+export {resume,selfdescription,jobDescription};

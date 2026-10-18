@@ -81,8 +81,14 @@ export const interviewSchema = new mongoose.Schema({
     },
     technicalQuestions: [technicalquestionSchema],
     behavioralQuestions: [behavioralquestionSchema],
-    skills: [skillsSchema],
-    preparation: [preparationSchema]    
+    skillGaps: [skillsSchema],
+    preparationPlan: [preparationSchema] ,
+    users:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User",
+        required:[true,"user is required"]
+    }   
+
 }, {
     _id: false
 });
