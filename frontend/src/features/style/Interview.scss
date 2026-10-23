@@ -1,0 +1,572 @@
+// ---------- Tokens ----------
+$bg-page: #0b0d12;
+$bg-panel: #10131a;
+$border: #1c212b;
+$text: #f2f4f8;
+$text-muted: #9aa3b2;
+$text-dim: #6b7383;
+
+$accent: #ff2d78;          // pink used for nav + timeline
+$accent-soft: rgba(255, 45, 120, 0.12);
+$accent-border: rgba(255, 45, 120, 0.35);
+
+$green: #2fd36b;
+$green-soft: rgba(47, 211, 107, 0.1);
+$green-border: rgba(47, 211, 107, 0.35);
+
+$amber: #f5a524;
+$amber-soft: rgba(245, 165, 36, 0.1);
+$amber-border: rgba(245, 165, 36, 0.35);
+
+$red: #ff4d4f;
+$red-soft: rgba(255, 77, 79, 0.1);
+$red-border: rgba(255, 77, 79, 0.4);
+
+$radius: 8px;
+
+@mixin respond($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}
+
+// ---------- Layout ----------
+.interview {
+  min-height: 100vh;
+  padding: 16px;
+  background: $bg-page;
+  color: $text;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  &__layout {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr) 225px;
+    min-height: calc(100vh - 32px);
+    background: $bg-panel;
+    border: 1px solid $border;
+    border-radius: 14px;
+    overflow: hidden;
+
+    @include respond(1024px) {
+      grid-template-columns: 200px minmax(0, 1fr);
+    }
+
+    @include respond(720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // ----- Left nav -----
+  &__nav {
+    padding: 28px 18px;
+    border-right: 1px solid $border;
+
+    @include respond(720px) {
+      border-right: none;
+      border-bottom: 1px solid $border;
+      padding: 18px;
+    }
+
+    nav {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      @include respond(720px) {
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
+    }
+  }
+
+  &__nav-title {
+    margin: 0 0 18px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  // ----- Center -----
+  &__content {
+    min-width: 0;
+    padding: 28px clamp(18px, 1.8vw, 26px) 48px;
+    overflow-y: auto;
+
+    @include respond(1024px) {
+      padding: 28px 22px 48px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 46px;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid $border;
+
+    h2 {
+      margin: 0;
+      color: $text;
+      font-size: 21px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  &__badge {
+    padding: 4px 12px;
+    font-size: 13px;
+    color: $text-muted;
+    background: #181c25;
+    border-radius: 999px;
+  }
+
+  // ----- Right side -----
+  &__side {
+    padding: 28px 18px;
+    border-left: 1px solid $border;
+
+    @include respond(1024px) {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      border-left: none;
+      border-top: 1px solid $border;
+    }
+
+    @include respond(720px) {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+// ---------- Nav item ----------
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px 12px;
+  font: inherit;
+  font-size: 14px;
+  color: $text-muted;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-radius: $radius;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+
+  &:hover {
+    color: $text;
+    background: #161a22;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $accent;
+    outline-offset: 2px;
+  }
+
+  &--active {
+    color: $accent;
+    background: $accent-soft;
+
+    &:hover {
+      color: $accent;
+      background: $accent-soft;
+    }
+  }
+}
+
+// ---------- Timeline (Road map) ----------
+.timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 40px;
+
+  // vertical line
+  &::before {
+    content: "";
+    position: absolute;
+    top: 8px;
+    bottom: 8px;
+    left: 9px;
+    width: 2px;
+    background: linear-gradient(to bottom, $accent, rgba(255, 45, 120, 0.25));
+  }
+
+  &__item {
+    position: relative;
+    margin-bottom: 30px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__dot {
+    position: absolute;
+    top: 2px;
+    left: -40px;
+    width: 20px;
+    height: 20px;
+    background: $bg-panel;
+    border: 2px solid $accent;
+    border-radius: 50%;
+  }
+
+  &__head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+
+  &__day {
+    padding: 3px 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: $accent;
+    background: $accent-soft;
+    border-radius: 6px;
+  }
+
+  &__focus {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &__tasks {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      position: relative;
+      margin-bottom: 6px;
+      padding-left: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: $text-muted;
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 9px;
+        left: 0;
+        width: 5px;
+        height: 5px;
+        background: $text-dim;
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+// ---------- Expandable question cards ----------
+.interview__questions {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.question-card {
+  width: 100%;
+  overflow: hidden;
+  background: #171b26;
+  border: 1px solid #252b38;
+  border-radius: 10px;
+  transition: border-color 0.18s ease, background-color 0.18s ease;
+
+  &:hover {
+    border-color: #343c4d;
+  }
+
+  &--open {
+    border-color: #343b4c;
+    background: #1a1e2b;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  &__heading {
+    margin: 0;
+  }
+
+  &__toggle {
+    width: 100%;
+    min-height: 58px;
+    padding: 13px 17px;
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    border: 0;
+    background: #1a1e2a;
+    color: $text;
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+
+    &:hover {
+      background: #202534;
+    }
+
+    &:focus-visible {
+      outline: 2px solid $accent;
+      outline-offset: -3px;
+    }
+  }
+
+  &--open &__toggle {
+    background: #202433;
+  }
+
+  &__number {
+    flex: 0 0 auto;
+    padding: 4px 7px;
+    border: 1px solid rgba(255, 45, 120, 0.14);
+    border-radius: 5px;
+    background: rgba(255, 45, 120, 0.12);
+    color: #ff5792;
+    font-size: 11px;
+    font-weight: 750;
+    letter-spacing: 0.2px;
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    color: #eef0f6;
+    font-size: 16px;
+    font-weight: 620;
+    line-height: 1.45;
+  }
+
+  &__chevron {
+    flex: 0 0 auto;
+    color: #8a93a4;
+    transition: transform 0.2s ease, color 0.2s ease;
+  }
+
+  &--open &__chevron {
+    transform: rotate(180deg);
+    color: $accent;
+  }
+
+  &__details {
+    padding: 15px 18px 18px;
+    border-top: 1px solid #2a3040;
+  }
+
+  &__section {
+    & + & {
+      margin-top: 15px;
+    }
+
+    p {
+      margin: 8px 0 0;
+      color: #b7bdca;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+  }
+
+  &__tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 8px;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border-radius: 5px;
+
+    &--intention {
+      color: #b7a2ff;
+      background: rgba(142, 104, 236, 0.16);
+    }
+
+    &--answer {
+      color: #6cd88b;
+      background: rgba(47, 211, 107, 0.13);
+    }
+  }
+}
+
+// ---------- Right column blocks ----------
+.side-block {
+  &__title {
+    margin: 0 0 18px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: $text-muted;
+  }
+
+  &__caption {
+    margin: 14px 0 0;
+    font-size: 13px;
+    text-align: center;
+    color: $green;
+  }
+
+  &:first-child {
+    padding-bottom: 22px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid $border;
+
+    @include respond(1024px) {
+      padding-bottom: 0;
+      margin-bottom: 0;
+      border-bottom: none;
+    }
+  }
+}
+
+// ---------- Score ring ----------
+.score-ring {
+  position: relative;
+  width: 104px;
+  height: 104px;
+  margin: 0 auto;
+
+  &__svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+  }
+
+  &__track,
+  &__value {
+    fill: none;
+    stroke-width: 5;
+  }
+
+  &__track {
+    stroke: #1b2a22;
+  }
+
+  &__value {
+    stroke: $green;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.9s ease;
+  }
+
+  &__text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+
+    strong {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    span {
+      margin-top: 2px;
+      font-size: 11px;
+      color: $text-muted;
+    }
+  }
+}
+
+// ---------- Skill gaps ----------
+.gaps {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gap {
+  max-width: 100%;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.35;
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  &--high {
+    width: 100%;
+    color: $red;
+    background: $red-soft;
+    border-color: $red-border;
+  }
+
+  &--medium {
+    color: $amber;
+    background: $amber-soft;
+    border-color: $amber-border;
+  }
+
+  &--low {
+    width: 100%;
+    color: $green;
+    background: $green-soft;
+    border-color: $green-border;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-item,
+  .score-ring__value,
+  .question-card,
+  .question-card__toggle,
+  .question-card__chevron {
+    transition: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .interview {
+    padding: 0;
+
+    &__content {
+      padding: 24px 18px 32px;
+    }
+
+    &__header {
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+  }
+
+  .question-card {
+    &__toggle {
+      min-height: 62px;
+      padding: 12px;
+      gap: 9px;
+    }
+
+    &__title {
+      font-size: 14px;
+    }
+
+    &__details {
+      padding: 14px 13px 16px;
+    }
+
+    &__section p {
+      font-size: 13px;
+    }
+  }
+}

@@ -79,8 +79,10 @@ export const loginUser = async (req, res) => {
           expiresIn: "5 hrs",
         },
       );
-      res.cookie("token", token);
 
+    
+      res.cookie("token", token);
+  console.log(token)
       res.status(201).json({
         message: "user loggined successfully",
 

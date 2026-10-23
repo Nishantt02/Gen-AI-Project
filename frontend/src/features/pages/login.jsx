@@ -12,7 +12,7 @@ function Login() {
         e.preventDefault();
         const data = await handlelogin({email,password});
         if (data?.user) {
-            navigate("/");
+            navigate("/home");
         }
     };
     if(loading){

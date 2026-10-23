@@ -14,7 +14,7 @@ function Register() {
     e.preventDefault();
     const data = await handleregister({ username, email, password });
     if (data?.user) {
-      navigate("/");
+      navigate("/home");
     }
   };
 
