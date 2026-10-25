@@ -1,28 +1,55 @@
+
 import axios from "axios";
 
-// these are the api for the genertate report of Interview 
-export async function generateInterviewreport({jobdescription,selfdescription,resumefile})
-{
-    
- // create the form data because the data from frontend is send in form of file to backend so create the form data.
-    const formData = new FormData()
-    formData.append("jobDescription", jobdescription)
-    formData.append("selfDescription", selfdescription)
-    formData.append("resume", resumefile)
+// Generate interview report
+export async function generateInterviewreport({
+  jobdescription,
+  selfdescription,
+  resume,
+}) {
+  if (!(resume instanceof File)) {
+    throw new Error("Please select a resume file before generating the report.");
+  }
 
-    const response = await api.post("/api/interviews/generate-report", formData, {
-        headers: {
-            "Content-Type": "multipart/form-data"
-        }
-    })
+  const formData = new FormData();
 
-    return response.data
+  formData.append("jobDescription", jobdescription);
+  formData.append("selfdescription", selfdescription);
+  formData.append("resume", resume, resume.name);
+   const token = localStorage.getItem("token");
 
+  if (!token) {
+    throw new Error("Authentication token not found. Please log in again.");
+  }
+
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/api/interviews/generate-report`,
+    formData,
+    { withCredentials: true }
+  );
+
+  return response.data;
 }
 
 
-export const getInterviewReportById = async (interviewId) => {
-    const response = await api.get(`/api/interviews/report/${interviewId}`)
+// Get interview report by ID
+export const getInterviewReportById = async (interviewId) => 
+    {
+      const response = await axios.get(
+    `${import.meta.env.VITE_BASE_URL}/api/interviews/getreport/${interviewId}`,
+    { withCredentials: true }
+  );
+  
 
-    return response.data
-}
+  return response.data;
+};
+
+// Get all interview reports for the current user
+export const getInterviewbyuser = async () => {
+  const response = await axios.get(
+    `${import.meta.env.VITE_BASE_URL}/api/interviews/`,
+    { withCredentials: true }
+  );
+
+  return response.data;
+};

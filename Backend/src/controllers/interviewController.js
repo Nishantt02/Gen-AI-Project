@@ -64,12 +64,15 @@ export const generateInterviewReportController = async (req, res) => {
     selfdescription,
   });
 
+  const { matchScore } = interviewreportbyai;
+
   const interviewreport = await interview.create({
     users: req.user.id,
     jobDescription,
     resume: resumeContent.text,
     selfdescription,
     ...interviewreportbyai,
+    matchScore,
   });
   res
     .status(200)
@@ -79,20 +82,20 @@ export const generateInterviewReportController = async (req, res) => {
     });
 };
 
-// controller to get the Interview report by the Interview id of the spesfic user
+// controller to get the Interview report by the Interview id of the specific user
 export const getInterviewreport = async (req, res) => {
   
   const { interviewId } = req.params;
   if (!interviewId) {
-    res.status(400).json({ message: "No interview report found" });
+    return res.status(400).json({ message: "No interview report found" });
   }
   const Interviewreport = await interview.findOne({
     _id: interviewId,
-    user: req.user._id,
+    users: req.user.id,
   });
 
   if (!Interviewreport) {
-    res.status(404).json({ message: "No Interview report found here" });
+    return res.status(404).json({ message: "No Interview report found here" });
   }
   res
     .status(200)
@@ -105,11 +108,11 @@ export const getInterviewreport = async (req, res) => {
 // controller to get the Interview report of all the loggined user
 export const getAllInterviewReportsController = async (req, res) => {
   const interviewReports = await interview
-    .find({ user: req.user._id })
+    .find({ users: req.user.id })
     .sort({ createdAt: -1 })
     .select(
-      "-resume -selfDescription -jobDescription -__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan",
-    );
+  "-__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan"
+);
 
   res.status(200).json({
     message: "Interview reports fetched successfully.",

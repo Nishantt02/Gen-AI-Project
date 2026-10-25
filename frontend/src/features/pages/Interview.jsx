@@ -1,96 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import "../style/Interview.scss";
+import { useInterview } from "../hooks/UserInterview.js";
 
-const defaultReport = {
-  matchScore: 88,
-  matchLabel: "Strong match for this role",
-  technicalQuestions: [
-    {
-      question: "Explain the phases of the Node.js event loop.",
-      intention: "Checks understanding of how Node handles async work under the hood.",
-      answers:
-        "Cover timers, pending callbacks, poll, check (setImmediate) and close callbacks, and explain where process.nextTick and promise microtasks run between phases.",
-    },
-    {
-      question: "How would you index a MongoDB collection that is filtered by two fields and sorted by a third?",
-      intention: "Tests knowledge of compound indexes and query performance.",
-      answers:
-        "Create a compound index following the equality, sort, range (ESR) rule, and verify it with explain('executionStats').",
-    },
-  ],
-  behavioralQuestions: [
-    {
-      question: "Tell me about a time you had to learn a new technology quickly.",
-      intention: "Looks for learning speed and self-direction.",
-      answers:
-        "Use the STAR format: describe the situation, what you had to learn, the steps you took, and the measurable result.",
-    },
-  ],
-  skillGaps: [
-    { skills: "Message Queues (Kafka/RabbitMQ)", severity: "high" },
-    { skills: "Advanced Docker & CI/CD Pipelines", severity: "medium" },
-    { skills: "Distributed Systems Design", severity: "medium" },
-    { skills: "Production-level Redis management", severity: "low" },
-  ],
-  preparationPlan: [
-    {
-      day: 1,
-      focus: "Node.js Internals & Streams",
-      tasks: [
-        "Deep dive into the Event Loop phases and process.nextTick vs setImmediate.",
-        "Practice implementing Node.js Streams for handling large data sets.",
-      ],
-    },
-    {
-      day: 2,
-      focus: "Advanced MongoDB & Indexing",
-      tasks: [
-        "Study Compound Indexes, TTL Indexes, and Text Indexes.",
-        "Practice writing complex Aggregation pipelines and using the .explain('executionStats') method.",
-      ],
-    },
-    {
-      day: 3,
-      focus: "Caching & Redis Strategies",
-      tasks: [
-        "Read about Redis data types beyond strings (Sets, Hashes, Sorted Sets).",
-        "Implement a Redis-based rate limiter or a caching layer for a sample API.",
-      ],
-    },
-    {
-      day: 4,
-      focus: "System Design & Microservices",
-      tasks: [
-        "Study Microservices communication patterns (Synchronous vs Asynchronous).",
-        "Learn about the API Gateway pattern and Circuit Breakers.",
-      ],
-    },
-    {
-      day: 5,
-      focus: "Message Queues & DevOps Basics",
-      tasks: [
-        "Watch introductory tutorials on RabbitMQ or Kafka.",
-        "Dockerize a project and write a simple GitHub Actions workflow for CI.",
-      ],
-    },
-    {
-      day: 6,
-      focus: "Data Structures & Algorithms",
-      tasks: [
-        "Solve 5-10 Medium LeetCode problems focusing on Arrays, Strings, and Hash Maps.",
-        "Review common sorting and searching algorithms.",
-      ],
-    },
-    {
-      day: 7,
-      focus: "Mock Interview & Project Review",
-      tasks: [
-        "Conduct a mock interview focusing on explaining the Real-time Chat Application architecture.",
-        "Prepare concise summaries for all work experience bullets.",
-      ],
-    },
-  ],
-};
+
 
 /* ---------- Small inline icons (no extra dependency) ---------- */
 const CodeIcon = () => (
@@ -239,12 +151,29 @@ const ScoreRing = ({ score }) => {
 };
 
 /* ---------- Main component ---------- */
-function Interview({ report = defaultReport }) {
+function Interview() 
+{
   const [activeSection, setActiveSection] = useState("roadmap");
+  const{report,loading}=useInterview();
+
+  
+  if (!report) {
+    return (
+      <main className="interview__content">
+        <p>{loading ? "Loading interview report…" : "Interview report is not available. Generate a report first."}</p>
+      </main>
+    );
+  }
+
+  const parsedMatchScore = Number(report.matchScore);
+  const matchScore = Number.isFinite(parsedMatchScore) ? parsedMatchScore : 0;
+  const matchLabel = report.matchLabel ?? (
+    matchScore >= 80 ? "Strong match for this role" :
+    matchScore >= 60 ? "Good potential for this role" :
+    "Areas to improve for this role"
+  );
 
   const {
-    matchScore = defaultReport.matchScore,
-    matchLabel = defaultReport.matchLabel,
     technicalQuestions = [],
     behavioralQuestions = [],
     skillGaps = [],

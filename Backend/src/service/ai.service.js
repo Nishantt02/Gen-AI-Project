@@ -29,6 +29,8 @@ const reportSchema = z.object({
       severity: z.enum(["low", "medium", "high"]),
     }),
   ),
+
+  matchScore: z.number().min(0).max(100),
   preparationPlan: z.array(
     z.object({
       day: z.number().int().nonnegative(),
@@ -90,16 +92,21 @@ const reportJsonSchema = {
         required: ["day", "focus", "tasks"],
       },
     },
+
+    matchScore: {
+      type: "NUMBER",
+    },
   },
   required: [
     "technicalQuestions",
     "behavioralQuestions",
     "skillGaps",
     "preparationPlan",
+    "matchScore",
   ],
 };
 
-// this will generate the Interview report 
+// this will generate the Interview report
 // using the Google GenAI API and validate the output against the Zod schema
 export async function generateInterviewreport({
   jobDescription,
@@ -119,7 +126,7 @@ export async function generateInterviewreport({
     }
   }
 
-  const prompt =`Generate an interview preparation report from the information below. Return all four requested sections, with clear sample answers.\n\nJob Description:\n${jobDescription}\n\nResume:\n${resume}\n\nSelf-description:\n${selfdescription}`;
+  const prompt = `Generate an interview preparation report from the information below. Return all four requested sections, with clear sample answers.\n\nJob Description:\n${jobDescription}\n\nResume:\n${resume}\n\nSelf-description:\n${selfdescription}`;
 
   const response = await ai.models.generateContent({
     model: "gemini-3.5-flash-lite",

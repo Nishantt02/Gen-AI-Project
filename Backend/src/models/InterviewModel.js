@@ -79,6 +79,11 @@ export const interviewSchema = new mongoose.Schema({
         type: String,
         required: [true, "self description is required"]
     },
+     matchScore: {
+        type: Number,
+        min: 0,
+        max: 100,
+    },
     technicalQuestions: [technicalquestionSchema],
     behavioralQuestions: [behavioralquestionSchema],
     skillGaps: [skillsSchema],
@@ -89,9 +94,12 @@ export const interviewSchema = new mongoose.Schema({
         required:[true,"user is required"]
     }   
 
-}, {
-    
-});
+}, 
+{
+timestamps:true,
+}
+
+);
 
 const Interview=mongoose.model("Interview", interviewSchema);
 export default Interview;

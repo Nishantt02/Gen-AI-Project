@@ -12,18 +12,21 @@ import Interview from "./features/pages/Interview.jsx";
     },{
         path:"/register",
         element:<Register/>
-    }
-    ,{
-        path:'/',
-        element: <Protected>
-            <h1>Welcome to the Home Page</h1>
-        </Protected>
-    },{
+    },
+    {
+        path:"/",
+        element:<Register/>
+    },
+    {
+        
         path:"/home",
-        element:<Home/>
+        element:<Protected>
+            <Home/>
+        </Protected>
+        
         
     },{
-        path:"/interview",
+        path:"/interview/:interviewId",
         element:<Interview/>
     }
 ])
