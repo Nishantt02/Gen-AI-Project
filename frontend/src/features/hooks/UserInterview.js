@@ -72,6 +72,8 @@ export const useInterview = () =>
       setloading(false);
     }
   }, [setReports, setloading]);
+
+  
   useEffect(()=>{
     if (interviewId && report?._id !== interviewId) {
       getInterviewbyid(interviewId).catch(() => {});

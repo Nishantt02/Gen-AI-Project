@@ -10,6 +10,7 @@ function Home() {
   const [reportsError, setReportsError] = useState("");
   const resumeref = useRef();
   const navigate = useNavigate();
+
   useEffect(() => {
     Interviewbyuser().catch(() => {
       setReportsError("Unable to load your interview reports. Please try again.");
@@ -103,56 +104,8 @@ function Home() {
       >
         Generate Interview Report
       </button>
-      {/* <section className="previous-reports">
-        <h2>Previous Interview Reports</h2>
-
-        {!reports || reports.length === 0 ? (
-          <p className="no-reports">
-            No previous interview reports found. Generate your first report!
-          </p>
-        ) : (
-          <div className="reports-list"> */}
-      {/* {reports.map((item) => (
-              <article className="report-card" key={item._id}>
-                <div className="report-info">
-                  <h3>{item. || item.jobRole || "Interview Report"}</h3>
-
-                  <p>
-                    Match Score:{" "}
-                    <strong>
-                      {item.matchScore != null
-                        ? `${item.matchScore}%`
-                        : "Not available"}
-                    </strong>
-                  </p>
-
-                  <p className="report-date">
-                    Created:{" "}
-                    {item.createdAt
-                      ? new Date(item.createdAt).toLocaleDateString()
-                      : "Date not available"}
-                  </p>
-                </div>
-
-                <button
-                  type="button"
-                  className="view-report-btn"
-                  onClick={() => navigate(`/interview/${item._id}`)}
-                >
-                  View Report
-                </button>
-              </article>
-            ))}
-          </div>
-        )}
-      </section> */}
-
-      <footer className="page-footer">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Help Center</a>
-      </footer>
-
+  
+      
       <section className="recent-reports" aria-labelledby="recent-reports-title">
         <h2 id="recent-reports-title">My Recent Interview Reports</h2>
         {reportsError ? (
@@ -195,6 +148,12 @@ function Home() {
           </ul>
         )}
       </section>
+      <footer className="page-footer">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Help Center</a>
+      </footer>
+
     </main>
   );
 }

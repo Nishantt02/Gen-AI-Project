@@ -1,4 +1,4 @@
-import { generateInterviewreport } from "../service/ai.service.js";
+import { generateInterviewreport,GenerateresumePDF } from "../service/ai.service.js";
 import { PDFParse } from "pdf-parse";
 import interview from "../models/InterviewModel.js";
 
@@ -111,7 +111,7 @@ export const getAllInterviewReportsController = async (req, res) => {
     .find({ users: req.user.id })
     .sort({ createdAt: -1 })
     .select(
-  "-__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan"
+  "-__v -technicalQuestions -behavioralQuestions -skillGaps -preparationPlan "
 );
 
   res.status(200).json({
@@ -119,3 +119,20 @@ export const getAllInterviewReportsController = async (req, res) => {
     interviewReports,
   });
 };
+
+export const generatepdf=async(req,res)=>{
+  // get the interview report by interview id req.params
+  const{interviewId}=req.params;
+  const interviewReport=await interview.findById(interviewId);
+  if(!interviewReport){
+    return res.status(404).json({message:"no report found"});
+  }
+  const{resume,jobDescription,selfdescription}=interviewReport;
+  const pdfbuffer=await GenerateresumePDF({resume,selfdescription,jobDescription});
+  res.set({
+    "Content-Type":"application/pdf",
+    "Content-Disposition":`attachment; filename="resume_${interviewId}.pdf"`
+  })
+  res.send(pdfbuffer);
+
+}

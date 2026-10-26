@@ -1,6 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
 import { z } from "zod";
+import puppeteer from "puppeteer";
 dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.google_genAI_api_key });
@@ -159,4 +160,130 @@ console.log(
   "AI service initialized; interview reports can be generated through POST /api/interviews/generate.",
 );
 
-// create the api of the which takes the resume in pdf format,job description and self description and returns the interview report in json format.
+
+
+// it is used to generate the pdf from html generate from the ai
+export const generatePdfFromHtml = async (html) => {
+  let browser;
+
+  try {
+    // Validate the HTML input
+    if (typeof html !== "string" || !html.trim()) {
+      throw new Error("HTML content is missing or invalid");
+    }
+
+    // Launch browser
+    browser = await puppeteer.launch({
+      headless: true
+    });
+
+    const page = await browser.newPage();
+
+    // Set HTML content
+    await page.setContent(html, {
+      waitUntil: "networkidle0"
+    });
+
+    // Generate PDF
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true
+    });
+
+    return pdfBuffer;
+
+  } catch (error) {
+    console.error("PDF generation failed:", error);
+    throw error;
+
+  } finally {
+    if (browser) {
+      await browser.close();
+    }
+  }
+}
+
+
+// create the api of the which takes the resume in pdf format,job description and self description
+//  and returns the interview report in json format.
+
+
+export async function GenerateresumePDF({
+  resume,
+  jobDescription,
+  selfdescription
+}) {
+  const resumeJsonSchema = {
+    type: "OBJECT",
+    properties: {
+      html: { type: "STRING" },
+    },
+    required: ["html"],
+  };
+
+const prompt = `
+Generate a professional, ATS-friendly resume in HTML.
+
+Resume:
+${resume}
+
+Self Description:
+${selfdescription}
+
+Job Description:
+${jobDescription}
+
+Requirements:
+- Return a JSON object containing a single field named "html".
+- The html field must contain a complete HTML document.
+- Include HTML, head, and body elements.
+- Use simple, professional CSS.
+- Keep the resume to approximately 1-2 pages.
+- Do not invent skills, qualifications, or experience.
+- Do not wrap the HTML in Markdown code fences.
+`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-3.5-flash-lite",
+    contents: prompt,
+    config: {
+      responseMimeType: "application/json",
+      responseJsonSchema: resumeJsonSchema
+    }
+  });
+
+  // Step 1: Check Gemini's response
+  // console.log("Gemini response:", response.text);
+
+  if (!response.text) {
+    throw new Error("Gemini returned an empty response");
+  }
+
+  // Step 2: Parse the JSON response
+  let jsonContent;
+
+  try {
+    jsonContent = JSON.parse(response.text);
+  } catch (error) {
+    console.error("JSON parsing error:", error);
+    throw new Error("Gemini returned invalid JSON");
+  }
+
+
+
+  if (
+    typeof jsonContent.html !== "string" ||
+    !jsonContent.html.trim()
+  ) {
+    throw new Error(
+      "Gemini response does not contain valid HTML"
+    );
+  }
+
+  // Step 4: Generate the PDF
+  const pdfBuffer = await generatePdfFromHtml(jsonContent.html);
+
+  return pdfBuffer;
+}
+
+
