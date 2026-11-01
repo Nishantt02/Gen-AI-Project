@@ -8,7 +8,7 @@ const app = express();
 app.use(cookieParser());
 app.use(
   cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
+    origin: process.env.VITE_BASE_URL,
     credentials: true,
   })
 );
