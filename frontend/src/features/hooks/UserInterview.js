@@ -9,8 +9,7 @@ import {
 } from "../services/interview.auth.api.js";
 
 export const useInterview = () => {
-  const { loading, setloading, report, setReport, reports, setReports } =
-    useContext(InterviewContext);
+  const { loading, setloading, report, setReport, reports, setReports }=useContext(InterviewContext);
 
   // the main work useparams is to read the url parameter like interviewid
   const { interviewId } = useParams();

@@ -120,20 +120,36 @@ export const getAllInterviewReportsController = async (req, res) => {
   });
 };
 
-export const generatepdf=async(req,res)=>{
-  // get the interview report by interview id req.params
-  const{interviewId}=req.params;
-  // get the interview report by findBy id 
-  const interviewReport=await interview.findById(interviewId);
-  if(!interviewReport){
-    return res.status(404).json({message:"no report found"});
-  }
-  const{resume,jobDescription,selfdescription}=interviewReport;
-  const pdfbuffer=await GenerateresumePDF({resume,selfdescription,jobDescription});
-  res.set({
-    "Content-Type":"application/pdf",
-    "Content-Disposition":`attachment; filename="resume_${interviewId}.pdf"`
-  })
-  res.send(pdfbuffer);
+export const generatepdf = async (req, res) => {
+  const { interviewId } = req.params;
 
-}
+  try {
+    // Restrict PDF generation to the signed-in user's own report.
+    const interviewReport = await interview.findOne({
+      _id: interviewId,
+      users: req.user.id,
+    });
+    if (!interviewReport) {
+      return res.status(404).json({ message: "Interview report not found." });
+    }
+
+    const { resume, jobDescription, selfdescription } = interviewReport;
+    const pdfBuffer = await GenerateresumePDF({
+      resume,
+      selfdescription,
+      jobDescription,
+    });
+
+    res.set({
+      "Content-Type": "application/pdf",
+      "Content-Disposition": `attachment; filename="resume_${interviewId}.pdf"`,
+    });
+    return res.send(pdfBuffer);
+  } catch (error) {
+    console.error("Resume PDF generation failed:", error?.stack || error);
+    return res.status(500).json({
+      message: "Could not generate the resume PDF.",
+      ...(process.env.NODE_ENV !== "production" && { detail: error.message }),
+    });
+  }
+};

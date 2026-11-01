@@ -154,6 +154,7 @@ const ScoreRing = ({ score }) => {
 function Interview() 
 {
   const [activeSection, setActiveSection] = useState("roadmap");
+  
   const{report,loading,getpdf}=useInterview();
 
   

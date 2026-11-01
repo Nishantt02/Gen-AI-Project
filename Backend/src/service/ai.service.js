@@ -138,7 +138,6 @@ export async function generateInterviewreport({
     },
   });
 
-  console.log(response.text);
   // here we get the response in json format and
   //  validate it against the Zod schema to ensure it meets our backend's requirements.
 
@@ -163,7 +162,8 @@ console.log(
 
 
 // it is used to generate the pdf from html generate from the ai
-export const generatePdfFromHtml = async (html) => {
+export const generatePdfFromHtml = async (html) => 
+  {
   let browser;
 
   try {
@@ -174,7 +174,10 @@ export const generatePdfFromHtml = async (html) => {
 
     // Launch browser
     browser = await puppeteer.launch({
-      headless: true
+      headless: true,
+      // Hosted Linux containers usually run as an unprivileged user without
+      // the sandbox support Chromium expects by default.
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
 
     const page = await browser.newPage();

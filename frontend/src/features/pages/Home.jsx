@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function Home() {
   const { loading, generatereport, reports, Interviewbyuser } = useInterview();
+  
   const [jobdescription, setJobdescription] = useState("");
   const [selfdescription, setSelfdescription] = useState("");
   const [reportsError, setReportsError] = useState("");
