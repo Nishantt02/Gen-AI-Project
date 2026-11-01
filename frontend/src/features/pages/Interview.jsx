@@ -154,7 +154,7 @@ const ScoreRing = ({ score }) => {
 function Interview() 
 {
   const [activeSection, setActiveSection] = useState("roadmap");
-  const{report,loading}=useInterview();
+  const{report,loading,getpdf}=useInterview();
 
   
   if (!report) {
@@ -207,8 +207,11 @@ function Interview()
               >
                 <Icon />
                 <span>{label}</span>
+                
               </button>
+              
             ))}
+           <button type="button" onClick={() => getpdf(report._id)} className="ai-resume-btn">Download Resume</button>
           </nav>
         </aside>
 

@@ -6,7 +6,7 @@ $text: #f2f4f8;
 $text-muted: #9aa3b2;
 $text-dim: #6b7383;
 
-$accent: #ff2d78;          // pink used for nav + timeline
+$accent: #ff2d78; // pink used for nav + timeline
 $accent-soft: rgba(255, 45, 120, 0.12);
 $accent-border: rgba(255, 45, 120, 0.35);
 
@@ -36,7 +36,12 @@ $radius: 8px;
   padding: 16px;
   background: $bg-page;
   color: $text;
-  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 
   &__layout {
     display: grid;
@@ -160,7 +165,9 @@ $radius: 8px;
   border: none;
   border-radius: $radius;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition:
+    background 0.2s,
+    color 0.2s;
 
   &:hover {
     color: $text;
@@ -285,7 +292,9 @@ $radius: 8px;
   background: #171b26;
   border: 1px solid #252b38;
   border-radius: 10px;
-  transition: border-color 0.18s ease, background-color 0.18s ease;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
 
   &:hover {
     border-color: #343c4d;
@@ -355,7 +364,9 @@ $radius: 8px;
   &__chevron {
     flex: 0 0 auto;
     color: #8a93a4;
-    transition: transform 0.2s ease, color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
   }
 
   &--open &__chevron {
@@ -496,6 +507,127 @@ $radius: 8px;
   list-style: none;
 }
 
+/* AI Generated Resume Button */
+
+.ai-resume-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 12px;
+  margin-top:470px;
+
+  border-radius: 14px;
+
+  
+  background-color: #eb3a78;
+
+  // color: #ff5792;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+
+  // box-shadow: 0 5px 18px rgba(99, 102, 241, 0.22);
+  box-shadow: #ff2d78;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+
+  /* Hover effect */
+
+  &:hover {
+    transform: translateY(-3px);
+
+    box-shadow: #ff2d78;
+    .ai-resume-btn__icon {
+      transform: rotate(-8deg) scale(1.08);
+      background: rgba(236, 3, 3, 0.22);
+    }
+
+    .ai-resume-btn__arrow {
+      transform: translateX(4px);
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  &:focus-visible {
+    outline: 3px solid #c4b5fd;
+    outline-offset: 3px;
+  }
+
+  /* Icon container */
+
+  &__icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    width: 43px;
+    height: 43px;
+
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.14);
+
+    transition:
+      transform 0.25s ease,
+      background 0.25s ease;
+  }
+
+  /* Text container */
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 5px;
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+  }
+
+  &__subtitle {
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 10px;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* Arrow */
+
+  &__arrow {
+    flex-shrink: 0;
+    font-size: 23px;
+    font-weight: 400;
+
+    transition: transform 0.25s ease;
+  }
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-resume-btn,
+  .ai-resume-btn__icon,
+  .ai-resume-btn__arrow {
+    transition: none;
+  }
+
+  .ai-resume-btn:hover {
+    transform: none;
+  }
+}
 .gap {
   max-width: 100%;
   padding: 8px 12px;

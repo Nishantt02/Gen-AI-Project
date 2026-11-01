@@ -123,6 +123,7 @@ export const getAllInterviewReportsController = async (req, res) => {
 export const generatepdf=async(req,res)=>{
   // get the interview report by interview id req.params
   const{interviewId}=req.params;
+  // get the interview report by findBy id 
   const interviewReport=await interview.findById(interviewId);
   if(!interviewReport){
     return res.status(404).json({message:"no report found"});

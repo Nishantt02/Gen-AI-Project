@@ -51,3 +51,19 @@ export const getInterviewbyuser = async () => {
 
   return response.data;
 };
+
+export const getresumepdf = async (interviewId) => {
+  if (!interviewId) {
+    throw new Error("An interview report ID is required to download the PDF.");
+  }
+
+  const response = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/api/interviews/resume/pdf/${interviewId}`,
+    {},
+    {
+      responseType: "blob",
+      withCredentials: true,
+    },
+  );
+  return response.data;
+}
