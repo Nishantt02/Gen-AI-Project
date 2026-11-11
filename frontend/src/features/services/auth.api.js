@@ -1,4 +1,5 @@
 import axios from "axios";
+import { authRequestConfig, clearAuthToken, saveAuthToken } from "./authToken.js";
 
 export async function registerUser({ username, email, password }) {
   try {
@@ -11,6 +12,7 @@ export async function registerUser({ username, email, password }) {
     {
           withCredentials:true
     })
+    saveAuthToken(response.data.token);
     return response.data;
   } catch (error) {
     console.error("Error registering user:", error);
@@ -27,6 +29,7 @@ export async function loginUser({ email, password }) {
     {
       withCredentials: true,
     });
+    saveAuthToken(response.data.token);
     return response.data;
   } catch (error) {
     console.error("Error logging in user:", error);
@@ -36,9 +39,11 @@ export async function loginUser({ email, password }) {
 
 export async function logoutUser() {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/auth/logout`, {
-      withCredentials: true,
-    });
+    const response = await axios.get(
+      `${import.meta.env.VITE_BASE_URL}/api/auth/logout`,
+      authRequestConfig(),
+    );
+    clearAuthToken();
     return response.data;
   } catch (error) {
     console.error("Error logging out user:", error);
@@ -51,17 +56,17 @@ export async function getme() {
     try {
         const response = await axios.get(
             `${import.meta.env.VITE_BASE_URL}/api/auth/get-me`,
-            {
-                withCredentials: true,
-            }
+            authRequestConfig()
         );
 
         return response.data;
     } catch (error) {
-        console.error(
-            "Error getting user:",
-            error.response?.data || error.message
-        );
+        if (error.response?.status !== 401) {
+            console.error(
+                "Error getting user:",
+                error.response?.data || error.message
+            );
+        }
 
         throw error;
     }

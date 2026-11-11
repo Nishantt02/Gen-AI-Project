@@ -79,6 +79,10 @@ export const interviewSchema = new mongoose.Schema({
         type: String,
         required: [true, "self description is required"]
     },
+    resumePdf: {
+        type: Buffer,
+        default: undefined
+    },
      matchScore: {
         type: Number,
         min: 0,

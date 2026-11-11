@@ -8,11 +8,21 @@ function Login() {
     const{loading,handlelogin}=useAuth();
     const[email,setEmail]=useState("");
     const[password,setPassword]=useState("");
+    const [error, setError] = useState("");
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const data = await handlelogin({email,password});
-        if (data?.user) {
-            navigate("/home");
+        setError("");
+        try {
+            const data = await handlelogin({email,password});
+            if (data?.user) {
+                navigate("/home");
+            }
+        } catch (loginError) {
+            setError(
+                loginError.response?.data?.message ||
+                loginError.message ||
+                "Login failed. Please try again.",
+            );
         }
     };
     if(loading){
@@ -25,6 +35,7 @@ function Login() {
                 <h1>Login</h1>
 
                 <form onSubmit={handleSubmit}>
+                    {error && <p role="alert">{error}</p>}
                     <div className="input-group">
                         <input onChange={(e)=>setEmail(e.target.value)}
                             type="email"

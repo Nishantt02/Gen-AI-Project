@@ -212,7 +212,9 @@ function Interview()
               </button>
               
             ))}
-           <button type="button" onClick={() => getpdf(report._id)} className="ai-resume-btn">Download Resume</button>
+           <button type="button" onClick={() => getpdf(report._id)} className="ai-resume-btn" disabled={loading}>
+             {loading ? "Preparing Resume…" : "Download Resume"}
+           </button>
           </nav>
         </aside>
 

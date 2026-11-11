@@ -4,7 +4,12 @@ import tokenBlacklistModel from "../models/blackListToken.js";
 
 const authmiddleware = async (req, res, next) => {
     try {
-        const token = req.cookies?.token;
+        const authorization = req.get("authorization");
+        const bearerToken = authorization?.startsWith("Bearer ")
+            ? authorization.slice(7).trim()
+            : null;
+        // Prefer the current browser session token when both are present.
+        const token = bearerToken || req.cookies?.token;
 
         if (!token) {
             return res.status(401).json({
@@ -30,6 +35,7 @@ const authmiddleware = async (req, res, next) => {
         console.log("Decoded token:", decoded);
 
         req.user = decoded;
+        req.authToken = token;
 
         next();
 

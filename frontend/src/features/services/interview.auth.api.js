@@ -1,4 +1,5 @@
 import axios from "axios";
+import { authRequestConfig } from "./authToken.js";
 
 // Generate interview report
 export async function generateInterviewreport({
@@ -17,16 +18,10 @@ export async function generateInterviewreport({
   formData.append("jobDescription", jobdescription);
   formData.append("selfdescription", selfdescription);
   formData.append("resume", resume, resume.name);
-  const token = localStorage.getItem("token");
-
-  if (!token) {
-    throw new Error("Authentication token not found. Please log in again.");
-  }
-
   const response = await axios.post(
     `${import.meta.env.VITE_BASE_URL}/api/interviews/generate-report`,
     formData,
-    { withCredentials: true },
+    authRequestConfig(),
   );
 
   return response.data;
@@ -36,7 +31,7 @@ export async function generateInterviewreport({
 export const getInterviewReportById = async (interviewId) => {
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/api/interviews/getreport/${interviewId}`,
-    { withCredentials: true },
+    authRequestConfig(),
   );
 
   return response.data;
@@ -46,7 +41,7 @@ export const getInterviewReportById = async (interviewId) => {
 export const getInterviewbyuser = async () => {
   const response = await axios.get(
     `${import.meta.env.VITE_BASE_URL}/api/interviews/`,
-    { withCredentials: true },
+    authRequestConfig(),
   );
 
   return response.data;
@@ -62,7 +57,7 @@ export const getresumepdf = async (interviewId) => {
     {},
     {
       responseType: "blob",
-      withCredentials: true,
+      ...authRequestConfig(),
     },
   );
   return response.data;

@@ -133,12 +133,23 @@ export const generatepdf = async (req, res) => {
       return res.status(404).json({ message: "Interview report not found." });
     }
 
+    if (interviewReport.resumePdf?.length) {
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="resume_${interviewId}.pdf"`,
+      });
+      return res.send(interviewReport.resumePdf);
+    }
+
     const { resume, jobDescription, selfdescription } = interviewReport;
     const pdfBuffer = await GenerateresumePDF({
       resume,
       selfdescription,
       jobDescription,
     });
+
+    interviewReport.resumePdf = Buffer.from(pdfBuffer);
+    await interviewReport.save();
 
     res.set({
       "Content-Type": "application/pdf",

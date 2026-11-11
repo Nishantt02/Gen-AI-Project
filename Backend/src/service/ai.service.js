@@ -130,7 +130,7 @@ export async function generateInterviewreport({
   const prompt = `Generate an interview preparation report from the information below. Return all four requested sections, with clear sample answers.\n\nJob Description:\n${jobDescription}\n\nResume:\n${resume}\n\nSelf-description:\n${selfdescription}`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash-lite",
+    model: "gemini-3.8-flash",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -184,7 +184,9 @@ export const generatePdfFromHtml = async (html) =>
 
     // Set HTML content
     await page.setContent(html, {
-      waitUntil: "networkidle0"
+      // The generated document is self-contained; waiting for network idle
+      // can add unnecessary delay if the HTML includes remote resources.
+      waitUntil: "domcontentloaded"
     });
 
     // Generate PDF
@@ -247,7 +249,7 @@ Requirements:
 `;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3.5-flash-lite",
+    model: "gemini-3.8-flash",
     contents: prompt,
     config: {
       responseMimeType: "application/json",

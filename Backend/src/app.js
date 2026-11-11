@@ -30,15 +30,25 @@ import cors from "cors";
 
 const app = express();
 
-const allowedOrigins = [
+const allowedOrigins = new Set([
   "http://localhost:5173",
   "http://localhost:5174",
-  process.env.VITE_BASE_URL,
-].filter(Boolean);
+  ...(process.env.FRONTEND_URL ?? "")
+    .split(",")
+    .map((origin) => origin.trim().replace(/\/$/, ""))
+    .filter(Boolean),
+]);
 
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      // Allow server-to-server and same-origin requests, plus explicitly configured
+      // frontend origins. Credentialed requests cannot use a wildcard origin.
+      if (!origin || allowedOrigins.has(origin.replace(/\/$/, ""))) {
+        return callback(null, true);
+      }
+      return callback(new Error(`Origin ${origin} is not allowed by CORS`));
+    },
     credentials: true,
   })
 );

@@ -3,6 +3,12 @@ import User from "../models/userSchema.js";
 import jwt from "jsonwebtoken";
 import tokenBlacklistModel from "../models/blackListToken.js";
 
+const authCookieOptions = {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === "production",
+  sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+};
+
 export const registeruser = async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -37,11 +43,12 @@ export const registeruser = async (req, res) => {
       },
     );
     // store the token into the cookie and send it to the brower or client
-    res.cookie("token", token);
+    res.cookie("token", token, authCookieOptions);
 
     // user created successfully and send the response to the client
     res.status(201).json({
       message: "user registered successfully",
+      token,
       user: {
         id: user._id,
         username: user.username,
@@ -55,16 +62,16 @@ export const registeruser = async (req, res) => {
 export const loginUser = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    res.status(400).json({ message: "please fills all the required fileds" });
+    return res.status(400).json({ message: "Please provide email and password." });
   }
   const user = await User.findOne({ email });
   if (!user) {
-    res.status(400).json({ message: "user not found" });
+    return res.status(400).json({ message: "User not found." });
   } else {
     // compare the passoword with the hashed password in the database
     const isPassowrdMatch = await bcrypt.compare(password, user.password);
     if (!isPassowrdMatch) {
-      res.status(400).json({ message: "invalid credentials" });
+      return res.status(400).json({ message: "Invalid email or password." });
     } 
     else
        {
@@ -81,9 +88,10 @@ export const loginUser = async (req, res) => {
       );
 
     
-      res.cookie("token", token);
+      res.cookie("token", token, authCookieOptions);
       res.status(201).json({
         message: "user loggined successfully",
+        token,
 
         user: {
           id: user._id,
@@ -96,14 +104,14 @@ export const loginUser = async (req, res) => {
 };
 
 export const logoutuser = async (req, res) => {
-  const token = req.cookies.token;
+  const token = req.authToken || req.cookies?.token;
   if (!token) {
     return res.status(400).json({ message: "user not logout" });
   } else {
     // add the token to the blacklist collection in the database
     await tokenBlacklistModel.create({ token });
     // clear the token from the cookie
-    res.clearCookie("token");
+    res.clearCookie("token", authCookieOptions);
     res.status(200).json({ message: "user logout successfully" });
   }
 };
