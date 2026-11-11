@@ -148,7 +148,7 @@ export const generatepdf = async (req, res) => {
       jobDescription,
     });
 
-    interviewReport.resumePdf = Buffer.from(pdfBuffer);
+    interviewReport.resumePdf = pdfBuffer;
     await interviewReport.save();
 
     res.set({
