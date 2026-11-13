@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: gen-ai-project-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: ./dist
+    envVars:
+      - key: VITE_BASE_URL
+        value: https://gen-ai-project-18.onrender.com
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

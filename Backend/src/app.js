@@ -33,7 +33,7 @@ const app = express();
 const allowedOrigins = new Set([
   "http://localhost:5173",
   "http://localhost:5174",
-  ...(process.env.FRONTEND_URL ?? "")
+  ...(process.env.VITE_BASE_URL ?? "")
     .split(",")
     .map((origin) => origin.trim().replace(/\/$/, ""))
     .filter(Boolean),
