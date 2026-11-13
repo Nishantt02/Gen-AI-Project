@@ -187,37 +187,93 @@ console.log(
 
 
 // it is used to generate the pdf from html generate from the ai
-export const generatePdfFromHtml = async (html) => 
-  {
+// export const generatePdfFromHtml = async (html) => 
+//   {
+//   let browser;
+
+//   try {
+//     // Validate the HTML input
+//     if (typeof html !== "string" || !html.trim()) {
+//       throw new Error("HTML content is missing or invalid");
+//     }
+
+//     // Launch browser
+//     browser = await puppeteer.launch({
+//       headless: true,
+//       // Hosted Linux containers usually run as an unprivileged user without
+//       // the sandbox support Chromium expects by default.
+//       args: ["--no-sandbox", "--disable-setuid-sandbox"],
+//     });
+
+//     const page = await browser.newPage();
+
+//     // Set HTML content
+//     await page.setContent(html, {
+//       // The generated document is self-contained; waiting for network idle
+//       // can add unnecessary delay if the HTML includes remote resources.
+//       waitUntil: "domcontentloaded"
+//     });
+
+//     // Generate PDF
+//     const pdfBuffer = await page.pdf({
+//       format: "A4",
+//       printBackground: true
+//     });
+
+//     return pdfBuffer;
+
+//   } catch (error) {
+//     console.error("PDF generation failed:", error);
+//     throw error;
+
+//   } finally {
+//     if (browser) {
+//       await browser.close();
+//     }
+//   }
+// }
+
+
+// import puppeteer from "puppeteer";
+
+export const generatePdfFromHtml = async (html) => {
   let browser;
 
   try {
-    // Validate the HTML input
+    // Validate HTML
     if (typeof html !== "string" || !html.trim()) {
       throw new Error("HTML content is missing or invalid");
     }
 
-    // Launch browser
+    // Launch Puppeteer
     browser = await puppeteer.launch({
       headless: true,
-      // Hosted Linux containers usually run as an unprivileged user without
-      // the sandbox support Chromium expects by default.
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      args: [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+      ],
     });
 
     const page = await browser.newPage();
 
     // Set HTML content
     await page.setContent(html, {
-      // The generated document is self-contained; waiting for network idle
-      // can add unnecessary delay if the HTML includes remote resources.
-      waitUntil: "domcontentloaded"
+      waitUntil: "domcontentloaded",
+      timeout: 60000,
     });
 
     // Generate PDF
     const pdfBuffer = await page.pdf({
       format: "A4",
-      printBackground: true
+      printBackground: true,
+      preferCSSPageSize: true,
+      margin: {
+        top: "15mm",
+        bottom: "15mm",
+        left: "12mm",
+        right: "12mm",
+      },
     });
 
     return pdfBuffer;
@@ -231,7 +287,8 @@ export const generatePdfFromHtml = async (html) =>
       await browser.close();
     }
   }
-}
+};
+
 
 
 // create the api of the which takes the resume in pdf format,job description and self description
