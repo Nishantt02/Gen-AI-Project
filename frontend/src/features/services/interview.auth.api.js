@@ -52,13 +52,29 @@ export const getresumepdf = async (interviewId) => {
     throw new Error("An interview report ID is required to download the PDF.");
   }
 
-  const response = await axios.post(
-    `${import.meta.env.VITE_BASE_URL}/api/interviews/resume/pdf/${interviewId}`,
-    {},
-    {
-      responseType: "blob",
-      ...authRequestConfig(),
-    },
-  );
-  return response.data;
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_BASE_URL}/api/interviews/resume/pdf/${interviewId}`,
+      {},
+      {
+        responseType: "blob",
+        ...authRequestConfig(),
+      },
+    );
+    return response.data;
+  } catch (error) {
+    const responseData = error.response?.data;
+    if (responseData instanceof Blob) {
+      let payload;
+      try {
+        payload = JSON.parse(await responseData.text());
+      } catch {
+        // Keep the original Axios error if the response is not JSON.
+      }
+      if (payload) throw new Error(payload.detail || payload.message || "Resume PDF generation failed.");
+    }
+    throw new Error(
+      responseData?.detail || responseData?.message || error.message || "Resume PDF generation failed.",
+    );
+  }
 }

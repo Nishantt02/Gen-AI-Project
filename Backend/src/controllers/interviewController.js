@@ -122,6 +122,7 @@ export const getAllInterviewReportsController = async (req, res) => {
 
 export const generatepdf = async (req, res) => {
   const { interviewId } = req.params;
+  let stage = "loading interview report";
 
   try {
     // Restrict PDF generation to the signed-in user's own report.
@@ -141,13 +142,17 @@ export const generatepdf = async (req, res) => {
       return res.send(interviewReport.resumePdf);
     }
 
+    stage = "generating resume HTML with Gemini";
     const { resume, jobDescription, selfdescription } = interviewReport;
-    const pdfBuffer = await GenerateresumePDF({
+    const generatedPdf = await GenerateresumePDF({
       resume,
       selfdescription,
       jobDescription,
     });
+    // Puppeteer returns Uint8Array; Mongoose Buffer fields require a Node Buffer.
+    const pdfBuffer = Buffer.from(generatedPdf);
 
+    stage = "saving generated PDF";
     interviewReport.resumePdf = pdfBuffer;
     await interviewReport.save();
 
@@ -157,10 +162,13 @@ export const generatepdf = async (req, res) => {
     });
     return res.send(pdfBuffer);
   } catch (error) {
-    console.error("Resume PDF generation failed:", error?.stack || error);
-    return res.status(500).json({
-      message: "Could not generate the resume PDF.",
-      ...(process.env.NODE_ENV !== "production" && { detail: error.message }),
+    console.error(`Resume PDF generation failed while ${stage}:`, error?.stack || error);
+    const upstreamStatus = Number(error.status || error.statusCode || error.error?.code);
+    const isTemporaryAiOutage = upstreamStatus === 503 || error.error?.status === "UNAVAILABLE";
+    return res.status(isTemporaryAiOutage ? 503 : 500).json({
+      message: `Could not generate the resume PDF while ${stage}.`,
+      detail: error.message || "Unknown server error",
+      retryable: isTemporaryAiOutage,
     });
   }
 };

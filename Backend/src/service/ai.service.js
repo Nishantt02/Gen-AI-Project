@@ -6,6 +6,31 @@ dotenv.config();
 
 const ai = new GoogleGenAI({ apiKey: process.env.google_genAI_api_key });
 
+// Gemini can return a transient 503 when a model is under heavy load. Retry
+// only transient capacity/rate-limit failures; validation and prompt errors
+// should be surfaced immediately.
+const isTransientGeminiError = (error) => {
+  const status = Number(error?.status ?? error?.statusCode ?? error?.error?.code);
+  return status === 429 || status === 500 || status === 502 || status === 503 ||
+    status === 504 || error?.error?.status === "UNAVAILABLE" ||
+    error?.error?.status === "RESOURCE_EXHAUSTED";
+};
+
+async function generateContentWithRetry(request, { maxAttempts = 3 } = {}) {
+  for (let attempt = 1; ; attempt += 1) {
+    try {
+      return await ai.models.generateContent(request);
+    } catch (error) {
+      if (attempt >= maxAttempts || !isTransientGeminiError(error)) throw error;
+      // 1s, then 2s (plus a little jitter) keeps retries bounded while giving
+      // temporary Gemini capacity spikes time to clear.
+      const delayMs = 1000 * (2 ** (attempt - 1)) + Math.floor(Math.random() * 250);
+      console.warn(`Gemini temporarily unavailable; retrying in ${delayMs}ms (attempt ${attempt + 1}/${maxAttempts}).`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
 // this is the Zod schema for the report that helps validate the AI service's output
 // Checks whether the returned data satisfies your backend's validation rules or not.
 
@@ -129,8 +154,8 @@ export async function generateInterviewreport({
 
   const prompt = `Generate an interview preparation report from the information below. Return all four requested sections, with clear sample answers.\n\nJob Description:\n${jobDescription}\n\nResume:\n${resume}\n\nSelf-description:\n${selfdescription}`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.8-flash",
+  const response = await generateContentWithRetry({
+    model: "gemini-3.6-flash",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
@@ -218,6 +243,15 @@ export async function GenerateresumePDF({
   jobDescription,
   selfdescription
 }) {
+  if (!process.env.google_genAI_api_key) {
+    throw new Error("Missing google_genAI_api_key in the backend environment.");
+  }
+  for (const [name, value] of Object.entries({ resume, jobDescription, selfdescription })) {
+    if (typeof value !== "string" || !value.trim()) {
+      throw new Error(`${name} is required to generate the resume PDF.`);
+    }
+  }
+
   const resumeJsonSchema = {
     type: "OBJECT",
     properties: {
@@ -248,8 +282,8 @@ Requirements:
 - Do not wrap the HTML in Markdown code fences.
 `;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-3.8-flash",
+  const response = await generateContentWithRetry({
+    model: "gemini-3.6-flash",
     contents: prompt,
     config: {
       responseMimeType: "application/json",
